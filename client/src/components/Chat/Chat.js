@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 
 import Infobar from '../Infobar/Infobar';
 import Input from '../Input/Input';
+import Messages from '../Messages/Messages';
 import './Chat.css';
 
 let socket;
@@ -14,11 +15,17 @@ const Chat = ({ location }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const ENDPOINT = 'localhost:5000';
+  var connectionOptions = {
+    'force new connection': true,
+    reconnectionAttempts: 'Infinity',
+    timeout: 10000,
+    transports: ['websocket'],
+  };
 
   useEffect(() => {
     const { name, room } = queryString.parse(location.search);
 
-    socket = io(ENDPOINT, { transports: ['websocket'] });
+    socket = io(ENDPOINT, connectionOptions);
 
     setName(name);
     setRoom(room);
@@ -52,6 +59,7 @@ const Chat = ({ location }) => {
     <div className='outerContainer'>
       <div className='container'>
         <Infobar room={room} />
+        <Messages messages={messages} name={name} />
         <Input
           message={message}
           setMessage={setMessage}
